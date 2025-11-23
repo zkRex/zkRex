@@ -1,36 +1,92 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+ZKREX — Next.js app
 
-## Getting Started
+This repository contains a [Next.js 16](https://nextjs.org) application using React 19 and Tailwind CSS v4.
 
-First, run the development server:
+## Prerequisites
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- Node.js 18.18+ (recommended 20+)
+- pnpm, npm, or yarn package manager
+
+## Environment variables
+
+Create a `.env` file in the project root with the following variables:
+
+```
+# Auth (Privy)
+NEXT_PUBLIC_PRIVY_APP_ID=your_privy_app_id
+PRIVY_APP_SECRET=your_privy_app_secret
+
+# ZK endpoint / contract address or API base used by the app
+NEXT_PUBLIC_ZK_ENDPOINT=your_zk_endpoint_or_address
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Notes:
+- Values prefixed with `NEXT_PUBLIC_` are exposed to the browser. Do not put secrets in these.
+- Never commit real secrets to version control. Use `.env.local` for local development when possible.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Install dependencies
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+From the project root:
 
-## Learn More
+```bash
+# with pnpm (recommended)
+pnpm install
 
-To learn more about Next.js, take a look at the following resources:
+# or with npm	npm install
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# or with yarn	yarn install
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Run the app (development)
 
-## Deploy on Vercel
+Start the local dev server with HMR:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+pnpm dev
+# or: npm run dev
+# or: yarn dev
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Then open http://localhost:3000 in your browser.
+
+## Build and run (production)
+
+```bash
+# Build
+pnpm build
+
+# Start the production server (after build)
+pnpm start
+```
+
+## Available scripts
+
+```bash
+pnpm dev     # start Next.js in development mode
+pnpm build   # build the app for production
+pnpm start   # start the production server
+pnpm lint    # run ESLint
+```
+
+## App routes you can try locally
+
+- / — landing/home
+- /app — main app page
+- /app/trade — trading page
+- /app/verify — self-verification flow
+
+Depending on feature flags and environment values, some pages may require a valid `NEXT_PUBLIC_PRIVY_APP_ID` to sign in.
+
+## Troubleshooting
+
+- Port already in use: change the port with `PORT=3001 pnpm dev`.
+- Missing env vars: ensure `.env` is present and contains the keys listed above. Restart the dev server after changes.
+
+## Deployment
+
+This is a standard Next.js app and can be deployed to platforms like Vercel, Netlify, or a custom Node server.
+
+For Vercel:
+1. Push your repo to GitHub/GitLab/Bitbucket.
+2. Import the project in Vercel and set the environment variables shown above.
+3. Deploy.
