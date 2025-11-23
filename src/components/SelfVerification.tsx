@@ -17,17 +17,17 @@ function VerificationPage() {
     const {user} = usePrivy();
     const [userId] = useState(user?.wallet?.address);
 
-    const endpoint = `${process.env.NEXT_PUBLIC_ZK_ENDPOINT}/api/verify/`;
     useEffect(() => {
+        console.log("seed", process.env.NEXT_PUBLIC_SELF_SCOPE_SEED);
         try {
             const app = new SelfAppBuilder({
                 version: 2,
-                appName: "zkTrex",
-                scope: process.env.NEXT_PUBLIC_SELF_SCOPE_SEED || "zkTrex-test",
-                endpoint: endpoint,
+                appName: "ZkRexID",
+                scope:"ZkRexID",
+                endpoint: process.env.NEXT_PUBLIC_ZK_ENDPOINT?.toLowerCase(),
                 logoBase64: "https://i.postimg.cc/mrmVf9hm/self.png",
                 userId: userId,
-                endpointType: "staging_https",
+                endpointType: "staging_celo",
                 userIdType: "hex",
                 disclosures: {
                     //check the API reference for more disclose attributes!
@@ -35,6 +35,8 @@ function VerificationPage() {
                     nationality: true,
                 }
             }).build();
+
+            console.log("Self app created:", {app});
 
             setSelfApp(app);
             setUniversalLink(getUniversalLink(app));

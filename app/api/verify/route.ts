@@ -12,7 +12,7 @@ export const runtime = 'nodejs';
 const endpoint = `${process.env.NEXT_PUBLIC_ZK_ENDPOINT}/api/verify/`;
 const selfBackendVerifier = new (SelfBackendVerifier)(
   process.env.NEXT_PUBLIC_SELF_SCOPE_SEED || "None", endpoint,
-  false,
+  true,
   // The following parameters mirror the reference example. If your project defines
   // AllIds and DefaultConfigStore, you can replace the placeholders below with real imports.
   // Passing undefined for them will use library defaults.
