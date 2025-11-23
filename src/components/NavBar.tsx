@@ -18,6 +18,8 @@ export default function NavBar() {
   const initials = (user?.id || "U").slice(0, 2).toUpperCase()
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement | null>(null)
+  const VERIFIED_KEY = 'zkrex_identity_verified'
+  const [isVerified, setIsVerified] = useState(false)
 
   useEffect(() => {
     function onDocClick(e: MouseEvent) {
@@ -28,6 +30,27 @@ export default function NavBar() {
     if (menuOpen) document.addEventListener("mousedown", onDocClick)
     return () => document.removeEventListener("mousedown", onDocClick)
   }, [menuOpen])
+
+  // Read verification status from localStorage and keep it in sync
+  useEffect(() => {
+    function readVerification() {
+      try {
+        const raw = typeof window !== 'undefined' ? localStorage.getItem(VERIFIED_KEY) : null
+        const parsed = raw ? JSON.parse(raw) : null
+        setIsVerified(!!parsed?.verified)
+      } catch {
+        setIsVerified(false)
+      }
+    }
+    readVerification()
+    function onStorage(e: StorageEvent) {
+      if (e.key === VERIFIED_KEY) {
+        readVerification()
+      }
+    }
+    window.addEventListener('storage', onStorage)
+    return () => window.removeEventListener('storage', onStorage)
+  }, [])
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-14 items-center gap-4 px-4">
@@ -64,13 +87,15 @@ export default function NavBar() {
               </Link>
             </NavigationMenuItem>
 
-            <NavigationMenuItem>
-              <Link href="/app/verify" passHref>
-                <NavigationMenuLink>
-                  Verify
-                </NavigationMenuLink>
-              </Link>
-            </NavigationMenuItem>
+            {!isVerified && (
+              <NavigationMenuItem>
+                <Link href="/app/verify" passHref>
+                  <NavigationMenuLink>
+                    Verify
+                  </NavigationMenuLink>
+                </Link>
+              </NavigationMenuItem>
+            )}
 
             {/* Auth */}
             {!authenticated ? (
