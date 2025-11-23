@@ -2,18 +2,19 @@
 "use client"
 
 import Link from "next/link"
+import {usePrivy} from "@privy-io/react-auth"
 import {
   NavigationMenu,
   NavigationMenuList,
   NavigationMenuItem,
-  NavigationMenuTrigger,
-  NavigationMenuContent,
   NavigationMenuLink,
 } from "@/components/ui/navigation-menu"
 
 // Simple top navigation bar built with the shadcn/ui Navigation Menu
 // Add or adjust menu items as needed for your app
 export default function NavBar() {
+  const { authenticated, login, user } = usePrivy()
+  const initials = (user?.id || "U").slice(0, 2).toUpperCase()
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-14 items-center gap-4 px-4">
@@ -35,53 +36,46 @@ export default function NavBar() {
             </NavigationMenuItem>
 
             <NavigationMenuItem>
-              <Link href="/about" legacyBehavior passHref>
+              <Link href="/app/assets" legacyBehavior passHref>
                 <NavigationMenuLink>
-                  About
+                  Assets
                 </NavigationMenuLink>
               </Link>
             </NavigationMenuItem>
 
             <NavigationMenuItem>
-              <Link href="/docs" legacyBehavior passHref>
+              <Link href="/app/trade" legacyBehavior passHref>
                 <NavigationMenuLink>
-                  Docs
+                  Trade
                 </NavigationMenuLink>
               </Link>
             </NavigationMenuItem>
 
-            {/* Dropdown example */}
             <NavigationMenuItem>
-              <NavigationMenuTrigger>Resources</NavigationMenuTrigger>
-              <NavigationMenuContent>
-                <div className="grid gap-3 p-4 md:w-[400px] lg:w-[500px]">
-                  <Link href="/blog" legacyBehavior passHref>
-                    <NavigationMenuLink className="rounded-md p-3 hover:bg-accent">
-                      <div className="text-sm font-medium leading-none">Blog</div>
-                      <p className="line-clamp-2 text-sm text-muted-foreground">
-                        Read updates and deep dives from the team.
-                      </p>
-                    </NavigationMenuLink>
-                  </Link>
-                  <Link href="/changelog" legacyBehavior passHref>
-                    <NavigationMenuLink className="rounded-md p-3 hover:bg-accent">
-                      <div className="text-sm font-medium leading-none">Changelog</div>
-                      <p className="line-clamp-2 text-sm text-muted-foreground">
-                        Track new features, fixes, and improvements.
-                      </p>
-                    </NavigationMenuLink>
-                  </Link>
-                  <Link href="/support" legacyBehavior passHref>
-                    <NavigationMenuLink className="rounded-md p-3 hover:bg-accent">
-                      <div className="text-sm font-medium leading-none">Support</div>
-                      <p className="line-clamp-2 text-sm text-muted-foreground">
-                        Get help or contact us.
-                      </p>
-                    </NavigationMenuLink>
-                  </Link>
+              <Link href="/app/verify" legacyBehavior passHref>
+                <NavigationMenuLink>
+                  Verify
+                </NavigationMenuLink>
+              </Link>
+            </NavigationMenuItem>
+
+            {/* Auth */}
+            {!authenticated ? (
+              <NavigationMenuItem>
+                <button
+                  onClick={login}
+                  className="inline-flex h-8 items-center justify-center rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground hover:opacity-90"
+                >
+                  Login
+                </button>
+              </NavigationMenuItem>
+            ) : (
+              <NavigationMenuItem>
+                <div className="ml-2 h-8 w-8 select-none rounded-full bg-muted text-muted-foreground flex items-center justify-center text-xs font-medium">
+                  {initials}
                 </div>
-              </NavigationMenuContent>
-            </NavigationMenuItem>
+              </NavigationMenuItem>
+            )}
           </NavigationMenuList>
         </NavigationMenu>
       </div>
