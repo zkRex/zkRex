@@ -35,6 +35,8 @@ type Asset = {
   address?: string; // token address for ERC20
   decimals?: number;
   type: "native" | "erc20";
+  // TODO: Remove mock value when real pricing is wired in.
+  valueUSD?: number; // mock USD value derived from mock price
 };
 
 // Minimal ERC20 ABI for balance and metadata
@@ -47,6 +49,14 @@ const ERC20_ABI = [
 
 // Sapphire (Oasis) Testnet RPC
 const SAPPHIRE_TESTNET_RPC = "https://testnet.sapphire.oasis.io";
+
+// TODO: Replace this mock price helper with a real pricing provider when available.
+// For now, we return a fixed mock price in USD for selected symbols (e.g., TEST/ROSEt).
+function getMockPriceUSD(symbol: string): number {
+  // Support both the previous placeholder symbol "TEST" and the current native symbol "ROSEt".
+  if (symbol === "TEST" || symbol === "ROSEt") return 1.0; // $1.00 mock price
+  return 0; // unknown tokens default to $0 mock price for now
+}
 
 
 export default function DashboardPage() {
@@ -88,6 +98,8 @@ export default function DashboardPage() {
             name: nativeMeta.name,
             symbol: nativeMeta.symbol,
             balance: nativeBalance,
+            // TODO: Replace mock pricing with real price feed.
+            valueUSD: getMockPriceUSD(nativeMeta.symbol) * Number(nativeBalance),
           },
         ];
 
@@ -113,6 +125,8 @@ export default function DashboardPage() {
               balance: human,
               address: t.address,
               decimals: Number(decimals),
+              // TODO: Replace mock pricing with real price feed per token.
+              valueUSD: getMockPriceUSD(String(symbol)) * Number(human),
             });
           } catch (e) {
             // ignore individual token errors
@@ -124,7 +138,9 @@ export default function DashboardPage() {
           // For now, we don’t have historical data on testnet; show a flat series for last 90 days.
           const days = 90;
           const today = new Date();
-          const totalValue = Number(nativeBalance); // native units; no USD pricing
+          // TODO: This is currently a flat series using native units or mock USD if available.
+          // When a real pricing provider is available, compute true USD portfolio total per day.
+          const totalValue = list.reduce((sum, a) => sum + (a.valueUSD ?? 0), 0);
           const series: { date: string; value: number }[] = [];
           for (let i = days - 1; i >= 0; i--) {
             const d = new Date(today);
@@ -197,7 +213,7 @@ export default function DashboardPage() {
                 />
                 <ChartTooltip
                   cursor={{ stroke: "hsl(var(--border))" }}
-                  content={<ChartTooltipContent />} 
+                  content={<ChartTooltipContent />}
                 />
                 <Line
                   type="monotone"
@@ -240,24 +256,25 @@ export default function DashboardPage() {
                 <TableHead>Asset</TableHead>
                 <TableHead>Ticker</TableHead>
                 <TableHead className="text-right">Balance</TableHead>
+                <TableHead className="text-right">Value (USD · mock)</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={3} className="py-10 text-center text-sm text-muted-foreground">
+                  <TableCell colSpan={4} className="py-10 text-center text-sm text-muted-foreground">
                     Loading your balances…
                   </TableCell>
                 </TableRow>
               ) : error ? (
                 <TableRow>
-                  <TableCell colSpan={3} className="py-10 text-center text-sm text-rose-600">
+                  <TableCell colSpan={4} className="py-10 text-center text-sm text-rose-600">
                     {error}
                   </TableCell>
                 </TableRow>
               ) : assets.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={3} className="py-10">
+                  <TableCell colSpan={4} className="py-10">
                     <div className="flex flex-col items-center justify-center gap-3 text-center">
                       <p className="text-sm text-muted-foreground">
                         No assets detected on Sapphire Testnet.
@@ -281,11 +298,17 @@ export default function DashboardPage() {
                     <TableCell className="text-right">
                       {Number(a.balance).toLocaleString(undefined, { maximumFractionDigits: 6 })}
                     </TableCell>
+                    <TableCell className="text-right">
+                      {/* TODO: Replace mock USD value with real pricing when provider is available */}
+                      {a.valueUSD != null
+                        ? `$${a.valueUSD.toLocaleString(undefined, { maximumFractionDigits: 2 })}`
+                        : "—"}
+                    </TableCell>
                   </TableRow>
                 ))
               )}
-            </TableBody>
-          </Table>
+          </TableBody>
+        </Table>
         </section>
       </div>
     </div>

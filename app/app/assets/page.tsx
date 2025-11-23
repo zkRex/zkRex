@@ -35,6 +35,15 @@ const assets: Asset[] = [
     accredited: true,
     status: "Eligible",
   },
+  // Feature USDC in curated assets
+  {
+    symbol: "USDC",
+    name: "USD Coin",
+    imageUrl: "https://avatar.vercel.sh/USDC",
+    price: 1.0,
+    accredited: true,
+    status: "Stablecoin",
+  },
   {
     symbol: "RWA1",
     name: "RWA Credit Note Series 1",
