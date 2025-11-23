@@ -12,25 +12,36 @@ export function getCuratedTokens(): { address: string; name?: string; symbol?: s
     // ignore parse errors and fall back to empty list
   }
 
-  // If a dedicated USDC address is provided, ensure USDC is present in the curated list
-  const usdcAddr = process.env.NEXT_PUBLIC_USDC_ADDRESS;
-  if (usdcAddr && typeof usdcAddr === "string" && usdcAddr.trim()) {
-    const target = usdcAddr.trim().toLowerCase();
-    const hasUSDC = list.some(
-      (t) => typeof t?.address === "string" && t.address.toLowerCase() === target
-    );
-    if (!hasUSDC) {
-      list = [
-        ...list,
-        {
-          address: usdcAddr.trim(),
+  const currateTokenList = [
+      {
+          address: "0x97eec1c29f745dC7c267F90292AA663d997a601D",
           name: "USD Coin",
           symbol: "USDC",
           decimals: 6,
-        },
-      ];
+      },
+      {
+          address: "0x8C4aCd74Ff4385f3B7911432FA6787Aa14406f8B",
+          name: "Tether",
+          symbol: "USDT",
+          decimals: 6,
+      },
+  ]
+
+  // If a dedicated USDC address is provided, ensure USDC is present in the curated list
+
+    for (const token of currateTokenList) {
+        const target = token.address.trim().toLowerCase();
+        const hasUSDC = list.some(
+            (t) => typeof t?.address === "string" && t.address.toLowerCase() === target
+        );
+        if (!hasUSDC) {
+            list = [
+                ...list,
+                token,
+            ];
+        }
     }
-  }
+
 
   return list;
 }
